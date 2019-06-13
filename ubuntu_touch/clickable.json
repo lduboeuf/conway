@@ -1,0 +1,6 @@
+{
+  "template": "qmake",
+  "kill": "conway",
+  "build_args": "CONFIG+=UBUNTU_TOUCH"
+}
+

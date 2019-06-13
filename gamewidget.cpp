@@ -13,8 +13,8 @@ GameWidget::GameWidget(QWidget *parent) :
     generations(-1),
     universeSize(50)
 {
-    timer->setInterval(300);
-    m_masterColor = "#000";
+    timer->setInterval(50);
+    m_masterColor = "#fff";
     universe = new bool[(universeSize + 2) * (universeSize + 2)];
     next = new bool[(universeSize + 2) * (universeSize + 2)];
     connect(timer, SIGNAL(timeout()), this, SLOT(newGeneration()));
@@ -48,6 +48,17 @@ void GameWidget::clear()
     }
     gameEnds(true);
     update();
+
+    maxCellsNb = 0;
+    genNb = 0;
+    minCellsNb = std::numeric_limits<int>::max();
+
+
+    emit messageChanged("");
+    emit maxCellsNbChanged("0");
+    emit minCellsNbChanged("0");
+    emit generationNumberChanged("0");
+
 }
 
 int GameWidget::cellNumber()
@@ -134,21 +145,37 @@ void GameWidget::newGeneration()
     if(generations < 0)
         generations++;
     int notChanged=0;
+    int cellsNb = 0;
     for(int k=1; k <= universeSize; k++) {
         for(int j=1; j <= universeSize; j++) {
-            next[k*universeSize + j] = isAlive(k, j);
+            bool alive = isAlive(k, j);
+            next[k*universeSize + j] = alive;
+            if (alive) cellsNb++;
             if(next[k*universeSize + j] == universe[k*universeSize + j])
                 notChanged++;
         }
     }
     if(notChanged == universeSize*universeSize) {
-        QMessageBox::information(this,
-                                 tr("Game lost sense"),
-                                 tr("The End. Now game finished because all the next generations will be the same."),
-                                 QMessageBox::Ok);
+        emit messageChanged(tr("The End. Now game finished because all the next generations will be the same."));
+//        QMessageBox::information(this,
+//                                 tr("Game lost sense"),
+//                                 tr("The End. Now game finished because all the next generations will be the same."),
+//                                 QMessageBox::Ok);
         stopGame();
         gameEnds(true);
         return;
+    }else{
+        emit nbCellsChanged(cellsNb);
+        emit generationNumberChanged(QString::number(genNb++));
+        if (maxCellsNb<cellsNb) {
+            maxCellsNb = cellsNb;
+            emit maxCellsNbChanged(QString::number(maxCellsNb));
+        }
+        if (minCellsNb>cellsNb) {
+            minCellsNb = cellsNb;
+            emit minCellsNbChanged(QString::number(minCellsNb));
+        }
+
     }
     for(int k=1; k <= universeSize; k++) {
         for(int j=1; j <= universeSize; j++) {
@@ -160,12 +187,15 @@ void GameWidget::newGeneration()
     if(generations == 0) {
         stopGame();
         gameEnds(true);
-        QMessageBox::information(this,
-                                 tr("Game finished."),
-                                 tr("Iterations finished."),
-                                 QMessageBox::Ok,
-                                 QMessageBox::Cancel);
+        emit messageChanged(tr("Iterations finished."));
+//        QMessageBox::information(this,
+//                                 tr("Game finished."),
+//                                 tr("Iterations finished."),
+//                                 QMessageBox::Ok,
+//                                 QMessageBox::Cancel);
     }
+
+    //qDebug() << "gen:" << genNb++;
 }
 
 void GameWidget::paintEvent(QPaintEvent *)

@@ -11,6 +11,7 @@ public:
     explicit GameWidget(QWidget *parent = 0);
     ~GameWidget();
 
+
 protected:
     void paintEvent(QPaintEvent *);
     void mousePressEvent(QMouseEvent *e);
@@ -21,6 +22,11 @@ signals:
     void environmentChanged(bool ok);
     //when game is over or clear is called,emit it to unlock the universeSize
     void gameEnds(bool ok);
+    void generationNumberChanged(QString nb);
+    void messageChanged(QString msg);
+    void maxCellsNbChanged(QString nb);
+    void minCellsNbChanged(QString nb);
+    void nbCellsChanged(int nb);
 
 public slots:
     void startGame(const int &number = -1); // start
@@ -53,6 +59,9 @@ private:
     int universeSize;
     bool isAlive(int k, int j); // return true if universe[k][j] accept rules
     void resetUniverse();// reset the size of universe
+    int genNb = 0;
+    int maxCellsNb =0;
+    int minCellsNb =std::numeric_limits<int>::max();
 };
 
 #endif // GAMEWIDGET_H

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Game of life
+Exec=gol
+Icon=assets/gol.png
+Terminal=false
+Type=Application
+X-Ubuntu-Touch=true
+X-Ubuntu-Supported-Orientations=landscape
+Name[en_US]=gol.desktop
