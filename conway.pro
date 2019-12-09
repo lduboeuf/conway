@@ -29,6 +29,15 @@ OTHER_FILES += \
 UBUNTU_TOUCH {
     message("building for Ubuntu Touch")
 
+    # figure out the current build architecture
+    CLICK_ARCH=$$system(dpkg-architecture -qDEB_HOST_ARCH)
+
+    # substitute the architecture in the manifest file
+    QMAKE_SUBSTITUTES += $$PWD/ubuntu_touch/manifest.json.in
+    manifest.files = ubuntu_touch/manifest.json
+    manifest.path = /
+    INSTALLS += manifest
+
     target.path = /
     click_files.path = /
     click_files.files = $$PWD/ubuntu_touch/*
